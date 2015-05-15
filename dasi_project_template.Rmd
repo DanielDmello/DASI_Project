@@ -1,0 +1,84 @@
+---
+title: "Relationship between education level and opinion on science and technology spending"
+output:
+  html_document:
+    theme: cerulean
+date: "20 April 2015"
+---
+
+<!-- For more info on RMarkdown see http://rmarkdown.rstudio.com/ -->
+
+<!-- Enter the code required to load your data in the space below. The data will be loaded but the line of code won't show up in your write up (echo=FALSE) in order to save space-->
+```{r echo=FALSE}
+load(url("http://bit.ly/dasi_anes_data"))
+```
+
+<!-- In the remainder of the document, add R code chunks as needed -->
+
+### Introduction:
+
+A study was conducted to determine if there is a relationship between a person's education level and opinion on science and technology spending, among US voters. This relationship, apart from being interesting is also useful as it tells us more about why some people might be more prone to spend on education and research. People with higher education levels might want the government to put aside more money for research purposes. This needs to be taken into account for economic planning and to understand voter mindsets.
+
+### Data:
+
+The data used to answer this question is from the 2012 American National Election Studies (ANES). The formal citation is, The American National Election Studies (ANES; www.electionstudies.org). The ANES 2012 Time Series Study [dataset]. Stanford University and the University of Michigan [producers]. 
+
+The data can be accessed at - http://bit.ly/dasi_anes_data
+The data set has 205 variables and 5914 rows or cases. Each case represents one random US voter who was surveyed online both before and after the 2012 US election.
+
+The two variables this study is interested in are education level attained (dem_edugroup) and opinion on science spending (fedspend_scitech). Both variables are categorical. The variable 'fedspend_scitech' contains answers to the question 'Should federal spending on science and technology be increased, decreased or kept the same?' The answer options are 'NA', 'increased', 'decreased' and 'kept same'. The 'dem_edugroup' variable indicates the highest level of education attained by the respondent. Answer options are 'NA', 'less than high school', 'high school', 'some post high school', 'Bachelors' and 'Graduate'.
+
+Since the data was collected in the form of a survey, the data is observational. There is no experimental stimulus or control group. However, the respondents were surveyed randomly, so the results, while not causal, are generalizable to the US voter population at large.
+
+### Exploratory data analysis:
+
+The two variables under consideration are education level (categorical) and opinion on science spending (catogorical). Exploratory statistics are below.
+
+```{r}
+summary(anes$dem_edugroup)
+plot(table(anes$dem_edugroup))
+```
+The summary and plot for education level show that most respondents have some post-high-school work, and large numbers have a high school credential and a Bachelor's degree.
+
+```{r}
+summary(anes$fedspend_scitech)
+plot(table(anes$fedspend_scitech))
+```
+The summary and plot for opinion on science and technology spending show that most respondents want increased spending on research, while another large chunk want it to be kept the same. We can see clear demarcations in both categorical variables under study, so the next useful step would be to compare the two to see if one varies based on another.
+
+```{r}
+mosaicplot(anes$dem_edugroup ~ anes$fedspend_scitech)
+```
+A mosaic plot that compares the two variables shows an association between increase in preference for science and technology spending and increase in education level, with the exception of those with a less than high school credential, who have a slightly higher preference for science spending compared to high school graduates. It is interesting to note that the proportion of respondents who want science spending decreased is roughly the same among all post high-school groups, and slightly higher in the first two groups. A contingency table comparing the two variables with exact figures is below.
+
+```{r}
+table(anes$dem_edugroup, anes$fedspend_scitech)
+```
+
+### Inference:
+
+Based on the results of the exploratory analysis above, the hypotheses we can set are,
+
+Null hypothesis: Education level and opinion on science and technology spending are independent. There is no relationship between education level and opinion on science and technology spending.
+Alternative hypothesis: Education level and opinion on science and technology spending are dependent. There is a relationship between education level and opinion on science and technology spending.
+
+We use a chi-sq test to evaluate this hypothsis because we are comparing two categorical groups and one of the two groups has more than two levels. The counts of each cell are compared against their expected counts if the two variables were independent. The larger the differences, the more significant the result. The two variables are first examined to see if they meet the conditions for a chi-square test of independence. The groups are independent as people in each group were randomly sampled and constitute less than 10% of the population. After all missing values were removed, each variable and cell met the success-failure condition.
+
+```{r}
+tbl <- table(anes$dem_edugroup, anes$fedspend_scitech)
+chisq.test(tbl)
+```
+
+The chi-sq test of independence shows us that the education level and opinion on science spending are dependent on each other [x-squared = 122.9538, df = 8, p value < 0.05]. We can therefore reject the null hypothesis.
+
+### Conclusion:
+
+Although we could see a realtionship between education level and opinion on science spending in the exploratory stage itself, the hypothesis test confirms this. However, this does not necessarily denote a causal relationship. There might be other confounding factors leading to this association. We could compare education level to other factors in the survey to see if opinions differ across factors. We could also conduct qualitative studies to add to our knowledge of why these differences exist. Though the diferences in opinon are correlational, they do have predictive value for future forecasting.
+
+###Appendix
+
+```{r}
+anes2 <- anes[,c("dem_edugroup","fedspend_scitech")]
+anes2[1:30,]
+```
+
